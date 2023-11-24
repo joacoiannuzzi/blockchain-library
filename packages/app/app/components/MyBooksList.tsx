@@ -28,11 +28,7 @@ export const MyBooksList = () => {
                 }}
               >
                 {books.map((book) => (
-                  <MyBookComponent
-                    key={book.id.toString()}
-                    book={book}
-                    canGet={false}
-                  />
+                  <MyBookComponent key={book.id.toString()} book={book} />
                 ))}
               </div>
             ) : (

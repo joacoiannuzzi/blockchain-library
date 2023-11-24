@@ -37,11 +37,7 @@ export const BooksList = () => {
                   <BookComponent
                     key={book.id.toString()}
                     book={book}
-                    canGet={
-                      tokens && tokens >= 10 && account?.address !== book.owner
-                        ? true
-                        : false
-                    }
+                    canGet={tokens >= 10 && account?.address !== book.owner}
                   />
                 ))}
               </div>
