@@ -8,28 +8,20 @@ import {
   useContractWrite,
   useWaitForTransaction,
 } from "wagmi";
-import abi from "../abi/greeter.json";
+import { greeterAbi } from "@/app/abi/greeter";
+import { envClientSchema } from "@/envVars";
 
 const useGreeting = ({
-  newGreeting,
+  newGreeting = "",
   onSetGreetingSuccess,
 }: {
   newGreeting?: string;
   onSetGreetingSuccess?: () => void;
-}): {
-  address: `0x${string}` | undefined;
-  greeting: string | null;
-  getGreetingLoading: boolean;
-  getGreetingError: boolean;
-  setGreeting: (() => void) | undefined;
-  setGreetingLoading: boolean;
-  prepareSetGreetingError: boolean;
-  setGreetingError: boolean;
-} => {
+}) => {
   // This pattern prevents Next.js server side hydration mismatch errors
   const [state, setState] = useState<{
-    address: `0x${string}` | undefined;
-    greeting: string | null;
+    address: string | undefined;
+    greeting: string | undefined;
     getGreetingLoading: boolean;
     getGreetingError: boolean;
     setGreeting: (() => void) | undefined;
@@ -55,17 +47,17 @@ const useGreeting = ({
     isLoading: getGreetingLoading,
     isError: getGreetingError,
   } = useContractRead({
-    address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
-    chainId: parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? "31337"),
-    abi,
+    address: envClientSchema.NEXT_PUBLIC_CONTRACT_GREETER_ADDRESS,
+    chainId: envClientSchema.NEXT_PUBLIC_CHAIN_ID,
+    abi: greeterAbi,
     functionName: "getGreeting",
     watch: true,
-  }) as { data: string | null; isLoading: boolean; isError: boolean };
+  });
 
   const { config, isError: prepareSetGreetingError } = usePrepareContractWrite({
-    address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
-    chainId: parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? "31337"),
-    abi,
+    address: envClientSchema.NEXT_PUBLIC_CONTRACT_GREETER_ADDRESS,
+    chainId: envClientSchema.NEXT_PUBLIC_CHAIN_ID,
+    abi: greeterAbi,
     functionName: "setGreeting",
     args: [newGreeting],
   });

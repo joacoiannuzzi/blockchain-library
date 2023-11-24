@@ -1,21 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { Library } from "../typechain-types/Library";
-
-function getBookAsObject(book: Library.BookStructOutput) {
-  return {
-    owner: book[0],
-    title: book[1],
-    author: book[2],
-    genre: book[3],
-    available: book[4],
-  };
-}
-
-function getBooksAsObjects(books: Library.BookStructOutput[]) {
-  return books.map(getBookAsObject);
-}
+import { getBooksAsObjects, getBookAsObject } from "../utils";
 
 describe("Library", function () {
   // This fixture deploys the contract and returns it
@@ -45,9 +31,10 @@ describe("Library", function () {
       genre: "Fantasy",
     };
 
-    await library.listBook(book.title, book.author, book.genre);
+    await library.connect(owner).listBook(book.title, book.author, book.genre);
 
     const expectedBook = {
+      id: BigInt(0),
       owner: owner.address,
       title: book.title,
       author: book.author,
@@ -56,6 +43,7 @@ describe("Library", function () {
     };
 
     const books = getBooksAsObjects(await library.getAllBooks());
+    console.log(books);
 
     expect(books).to.deep.contain(expectedBook);
     expect(books).to.have.lengthOf(1);
@@ -108,10 +96,13 @@ describe("Library", function () {
     ];
 
     for (const book of books) {
-      await library.listBook(book.title, book.author, book.genre);
+      await library
+        .connect(owner)
+        .listBook(book.title, book.author, book.genre);
     }
 
-    const expectedBooks = books.map((book) => ({
+    const expectedBooks = books.map((book, index) => ({
+      id: BigInt(index),
       owner: owner.address,
       title: book.title,
       author: book.author,
@@ -194,6 +185,7 @@ describe("Library", function () {
 
     const booksAfterTransfer = [
       {
+        id: BigInt(0),
         owner: secondUser.address,
         title: "The Hobbit",
         author: "J.R.R. Tolkien",
@@ -201,6 +193,7 @@ describe("Library", function () {
         available: false,
       },
       {
+        id: BigInt(1),
         owner: secondUser.address,
         title: "Harry Potter and the Philosopher's Stone",
         author: "J.K. Rowling",
@@ -350,11 +343,11 @@ describe("Library", function () {
 
     await library.connect(secondUser).transferBook(0);
 
-    expect(getBookAsObject(await library.books(0)).available).to.be.false;
+    expect((await library.books(0)).available).to.be.false;
 
     await library.connect(secondUser).makeBookAvailable(0);
 
-    expect(getBookAsObject(await library.books(0)).available).to.be.true;
+    expect((await library.books(0)).available).to.be.true;
 
     // check that an event was emitted
 
@@ -461,11 +454,11 @@ describe("Library", function () {
         .listBook(book.title, book.author, book.genre);
     }
 
-    expect(getBookAsObject(await library.books(0)).available).to.be.true;
+    expect((await library.books(0)).available).to.be.true;
 
     await library.connect(firstUser).makeBookUnavailable(0);
 
-    expect(getBookAsObject(await library.books(0)).available).to.be.false;
+    expect((await library.books(0)).available).to.be.false;
 
     // check that an event was emitted
 

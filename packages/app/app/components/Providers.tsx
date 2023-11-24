@@ -6,20 +6,21 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { hardhat, goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
+import { envClientSchema } from "@/envVars";
 
-const chain = process.env.NEXT_PUBLIC_CHAIN_ID === "5" ? goerli : hardhat;
+const chain = envClientSchema.NEXT_PUBLIC_CHAIN_ID === 5 ? goerli : hardhat;
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [chain],
   [
     alchemyProvider({
-      apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY ?? "",
+      apiKey: envClientSchema.NEXT_PUBLIC_ALCHEMY_API_KEY,
     }),
     publicProvider(),
-  ],
+  ]
 );
 const { connectors } = getDefaultWallets({
-  appName: "Solidity Next.js Starter",
-  projectId: process.env.NEXT_PUBLIC_RAINBOWKIT_PROJECT_ID ?? "",
+  appName: "Blockchain Library",
+  projectId: envClientSchema.NEXT_PUBLIC_RAINBOWKIT_PROJECT_ID,
   chains,
 });
 const config = createConfig({

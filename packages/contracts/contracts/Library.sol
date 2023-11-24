@@ -11,6 +11,15 @@ contract Library {
         bool available;
     }
 
+    struct BookWithId {
+        uint256 id;
+        address owner;
+        string title;
+        string author;
+        string genre;
+        bool available;
+    }
+
     // Mapping of book IDs to Book structs
     mapping(uint256 => Book) public books;
 
@@ -145,18 +154,18 @@ contract Library {
     // Function to get the books owned by a user
     function getBooksByOwner(
         address owner
-    ) external view returns (Book[] memory) {
+    ) external view returns (BookWithId[] memory) {
         // Get the number of books owned by the user
         uint256 bookCount = ownerBookCounters[owner];
 
         // Check if the user owns any books
         if (bookCount == 0) {
             // Return an empty array
-            return new Book[](0);
+            return new BookWithId[](0);
         }
 
         // Create a new array to store the books
-        Book[] memory ownedBooks = new Book[](bookCount);
+        BookWithId[] memory ownedBooks = new BookWithId[](bookCount);
 
         // Iterate over all the books
         uint256 counter = 0;
@@ -165,7 +174,15 @@ contract Library {
             Book storage book = books[i];
             if (book.owner == owner) {
                 // Add the book to the array
-                ownedBooks[counter] = book;
+                ownedBooks[counter] = BookWithId({
+                    id: i,
+                    owner: book.owner,
+                    title: book.title,
+                    author: book.author,
+                    genre: book.genre,
+                    available: book.available
+                });
+
                 counter++;
             }
         }
@@ -175,14 +192,22 @@ contract Library {
     }
 
     // Function to get all the books
-    function getAllBooks() external view returns (Book[] memory) {
+    function getAllBooks() external view returns (BookWithId[] memory) {
         // Create a new array to store the books
-        Book[] memory allBooks = new Book[](bookCounter);
+        BookWithId[] memory allBooks = new BookWithId[](bookCounter);
 
         // Iterate over all the books
         for (uint256 i = 0; i < bookCounter; i++) {
             // Add the book to the array
-            allBooks[i] = books[i];
+            Book storage book = books[i];
+            allBooks[i] = BookWithId({
+                id: i,
+                owner: book.owner,
+                title: book.title,
+                author: book.author,
+                genre: book.genre,
+                available: book.available
+            });
         }
 
         // Return the array of books

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useGreeting } from "../hooks/useGreeting";
+import { useGreeting } from "@/app/hooks/useGreeting";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { toast } from "react-toastify";
 
