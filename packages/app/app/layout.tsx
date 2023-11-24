@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import { Providers } from "@/app/components/Providers";
 import { Header } from "@/app/components/Header";
 import { ToastContainer } from "react-toastify";
+import { AuthWrapper } from "./components/AuthWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,12 +24,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <div className="flex flex-col min-h-screen">
-            <div className="sticky z-50 top-0">
-              <Header />
+          <AuthWrapper>
+            <div className="flex flex-col min-h-screen">
+              <div className="sticky z-50 top-0">
+                <Header />
+              </div>
+              <div className="flex-grow">{children}</div>
             </div>
-            <div className="flex-grow">{children}</div>
-          </div>
+          </AuthWrapper>
         </Providers>
         <ToastContainer />
       </body>
